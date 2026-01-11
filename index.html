@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CTZPay Mini ERP - POS System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/style.css">
+    <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+</head>
+  <body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <i class="bi bi-house-door-fill me-2"></i>
+          <strong>CTZPay Mini ERP</strong>
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-phone text-white fs-5"></i>
+          <i class="bi bi-cart3 text-white fs-5"></i>
+          <i class="bi bi-file-earmark-text text-white fs-5"></i>
+          <i class="bi bi-pause-circle text-white fs-5"></i>
+          <i class="bi bi-x-circle text-white fs-5"></i>
+          <i class="bi bi-person-circle text-white fs-5"></i>
+          <i class="bi bi-calculator text-white fs-5"></i>
+          <i class="bi bi-file-text text-white fs-5"></i>
+          <span class="text-white">
+            <i class="bi bi-person-fill"></i> Cashier: John Doe
+          </span>
+          <i class="bi bi-fullscreen text-white fs-5"></i>
+          <i class="bi bi-box-arrow-right text-white fs-5"></i>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid px-4 py-3">
+      <div class="row">
+        <!-- Main Content Area -->
+        <div class="col-lg-8">
+          <!-- Search and Quick Sale Row -->
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-upc-scan"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Scan barcode..." id="barcodeInput">
+              </div>
+            </div>
+            <div class="col-md-5 mb-2 mb-md-0">
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-danger w-100 fw-bold">
+                <i class="bi bi-lightning-fill"></i> Quick Sale
+              </button>
+            </div>
+          </div>
+
+          <!-- Favorites Section -->
+          <div class="mb-3">
+            <h6 class="mb-2"><i class="bi bi-star-fill text-warning"></i> Favorites</h6>
+            <div class="row g-2">
+              <div class="col-md-6 col-lg-3">
+                <div class="favorite-card bg-warning bg-opacity-10 border border-warning" data-product="coca-cola">
+                  <div class="fw-semibold">Coca Cola 330ml</div>
+                  <div class="text-success fw-bold">Ks 1,500</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="favorite-card bg-warning bg-opacity-10 border border-warning" data-product="lays-chips">
+                  <div class="fw-semibold">Lay's Chips Original</div>
+                  <div class="text-success fw-bold">Ks 2,250</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="favorite-card bg-warning bg-opacity-10 border border-warning" data-product="kitkat">
+                  <div class="fw-semibold">KitKat Chocolate</div>
+                  <div class="text-success fw-bold">Ks 1,750</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="favorite-card bg-warning bg-opacity-10 border border-warning" data-product="red-bull">
+                  <div class="fw-semibold">Red Bull 250ml</div>
+                  <div class="text-success fw-bold">Ks 2,500</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Items Section -->
+          <div class="mb-3">
+            <h6 class="mb-2"><i class="bi bi-lightning-fill text-primary"></i> Quick Items</h6>
+            <div class="row g-2">
+              <div class="col-md-6 col-lg-3">
+                <div class="quick-item-card bg-info bg-opacity-10 border border-info">
+                  <div class="fw-semibold">Sweet</div>
+                  <div class="text-success fw-bold">Ks 1,000</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="quick-item-card bg-info bg-opacity-10 border border-info">
+                  <div class="fw-semibold">Snack</div>
+                  <div class="text-success fw-bold">Ks 2,000</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="quick-item-card bg-info bg-opacity-10 border border-info">
+                  <div class="fw-semibold">Drink</div>
+                  <div class="text-success fw-bold">Ks 1,500</div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div class="quick-item-card bg-info bg-opacity-10 border border-info">
+                  <div class="fw-semibold">Other</div>
+                  <div class="text-success fw-bold">Ks 500</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Filters -->
+          <div class="mb-3">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-danger category-btn active" data-category="all">All 8</button>
+              <button type="button" class="btn btn-outline-secondary category-btn" data-category="beverages">Beverages 3</button>
+              <button type="button" class="btn btn-outline-secondary category-btn" data-category="snacks">Snacks 3</button>
+              <button type="button" class="btn btn-outline-secondary category-btn" data-category="sweets">Sweets 2</button>
+            </div>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="row g-3" id="productsGrid">
+            <!-- Products will be dynamically loaded here -->
+          </div>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div class="col-lg-4">
+          <div class="cart-sidebar">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">
+                <i class="bi bi-cart3 text-primary"></i> Current Order
+                <span class="badge bg-secondary" id="cartItemCount">0</span>
+              </h5>
+              <button class="btn btn-sm btn-link text-danger" id="clearCart">
+                <i class="bi bi-x-lg"></i> Clear
+              </button>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="cart-items mb-3" id="cartItems">
+              <!-- Cart items will be dynamically loaded here -->
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span class="fw-bold" id="subtotal">Ks 0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Tax (5%):</span>
+                <span class="fw-bold" id="tax">Ks 0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3 fs-5">
+                <span class="fw-bold">Total:</span>
+                <span class="fw-bold text-success" id="total">Ks 0</span>
+              </div>
+
+              <!-- Payment Buttons -->
+              <div class="row g-2">
+                <div class="col-4">
+                  <button class="btn btn-success w-100 payment-btn">
+                    <i class="bi bi-cash"></i> Cash
+                  </button>
+                </div>
+                <div class="col-4">
+                  <button class="btn btn-purple w-100 payment-btn">
+                    <i class="bi bi-credit-card"></i> MXMOR
+                  </button>
+                </div>
+                <div class="col-4">
+                  <button class="btn btn-pink w-100 payment-btn">
+                    <i class="bi bi-wallet2"></i> CTZ Pay
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
