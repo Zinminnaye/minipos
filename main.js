@@ -1,84 +1,52 @@
-import './style.css'
+import './style.css';
+// Import global styles for the app (CSS handled by bundler)
+import './style.css';
 
-const products = [
-  {
-    id: 'coca-cola',
-    name: 'Coca Cola 330ml',
-    price: 1500,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/50593/coca-cola-cold-drink-soft-drink-coke-50593.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'lays-chips',
-    name: "Lay's Chips Original",
-    price: 2250,
-    category: 'snacks',
-    image: 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'kitkat',
-    name: 'KitKat Chocolate',
-    price: 1750,
-    category: 'sweets',
-    image: 'https://images.pexels.com/photos/4110256/pexels-photo-4110256.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'mineral-water',
-    name: 'Mineral Water 500ml',
-    price: 750,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/1346086/pexels-photo-1346086.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'pringles',
-    name: 'Pringles Original',
-    price: 3500,
-    category: 'snacks',
-    image: 'https://images.pexels.com/photos/4109998/pexels-photo-4109998.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'red-bull',
-    name: 'Red Bull 250ml',
-    price: 2500,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/2351838/pexels-photo-2351838.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'doritos',
-    name: 'Doritos Nacho Cheese',
-    price: 2750,
-    category: 'snacks',
-    image: 'https://images.pexels.com/photos/2762256/pexels-photo-2762256.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: 'snickers',
-    name: 'Snickers Bar',
-    price: 1250,
-    category: 'sweets',
-    image: 'https://images.pexels.com/photos/5705480/pexels-photo-5705480.jpeg?auto=compress&cs=tinysrgb&w=400'
-  }
-];
+// Import the service worker register helper from the PWA plugin
+// `virtual:pwa-register` is provided by the build tool (Vite + plugin)
+import { registerSW } from 'virtual:pwa-register';
 
-let cart = [];
-let currentCategory = 'all';
+// Named imports from service modules. These functions are defined
+// in `./services/productService.js` and `./services/saleService.js`.
+// Using named imports lets us import only what we need.
+import {
+  getProductsFromDB,
+  syncProductsFromServer
+} from './services/productService.js';
 
+import { saveSale, getSaleHeaders, getSaleItems } from './services/saleService.js'
+
+// Application state (mutable). Use `let` for variables that change.
+let products = []; // Array of product objects
+let cart = [];     // Array of items currently in cart
+let currentCategory = 'all'; // Track active product category
+
+// Utility: format numeric price as localized string with currency
+// Template literals (backticks) allow easy interpolation: `Ks ${...}`
 function formatPrice(price) {
   return `Ks ${price.toLocaleString()}`;
 }
 
+// Render products into the DOM.
+// Default parameters: ES6 allows `category = 'all'` and `searchTerm = ''`.
 function renderProducts(category = 'all', searchTerm = '') {
+
+  // Get target container from DOM
   const productsGrid = document.getElementById('productsGrid');
 
+  // Filter using ternary operator and array.filter (ES6 arrow functions)
   let filteredProducts = category === 'all'
     ? products
     : products.filter(p => p.category === category);
 
+  // Support simple client-side search (case-insensitive)
   if (searchTerm) {
     filteredProducts = filteredProducts.filter(p =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
+  // Use map + join to build HTML string. Template literals make HTML insertion readable.
   productsGrid.innerHTML = filteredProducts.map(product => `
     <div class="col-md-6 col-lg-3">
       <div class="product-card" data-product-id="${product.id}">
@@ -89,43 +57,52 @@ function renderProducts(category = 'all', searchTerm = '') {
     </div>
   `).join('');
 
+  // Attach click handlers to each product card. `dataset` is used to read data- attributes.
   document.querySelectorAll('.product-card').forEach(card => {
     card.addEventListener('click', () => {
-      const productId = card.dataset.productId;
+      const productId = card.dataset.productId; // string from `data-product-id`
       addToCart(productId);
     });
   });
 }
 
+// Add a product to the cart by product id
 function addToCart(productId) {
+  // Find product in the `products` array (array.find with arrow fn)
   const product = products.find(p => p.id === productId);
-  if (!product) return;
+  if (!product) return; // guard clause
 
+  // Check if item already in cart
   const existingItem = cart.find(item => item.id === productId);
 
   if (existingItem) {
+    // Mutate existing item quantity
     existingItem.quantity += 1;
   } else {
+    // Spread operator `...product` copies properties into new object
     cart.push({
       ...product,
       quantity: 1
     });
   }
 
-  updateCart();
+  updateCart(); // Re-render cart UI
 }
 
+// Remove a product from cart by id (filter returns a new array)
 function removeFromCart(productId) {
   cart = cart.filter(item => item.id !== productId);
   updateCart();
 }
 
+// Update the numeric quantity for a cart item
 function updateQuantity(productId, quantity) {
   const item = cart.find(item => item.id === productId);
   if (!item) return;
 
   const newQuantity = parseInt(quantity);
   if (newQuantity <= 0) {
+    // If zero or negative, remove the item
     removeFromCart(productId);
   } else {
     item.quantity = newQuantity;
@@ -133,6 +110,7 @@ function updateQuantity(productId, quantity) {
   }
 }
 
+// Rebuild cart UI and attach per-item event listeners
 function updateCart() {
   const cartItems = document.getElementById('cartItems');
   const cartItemCount = document.getElementById('cartItemCount');
@@ -167,9 +145,11 @@ function updateCart() {
       </div>
     `).join('');
 
+    // `reduce` example: compute total item count
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartItemCount.textContent = totalItems;
 
+    // Attach listeners for delete / quantity change buttons
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         removeFromCart(btn.dataset.productId);
@@ -195,6 +175,7 @@ function updateCart() {
     });
 
     document.querySelectorAll('.quantity-input').forEach(input => {
+      // `change` event gives `e.target.value` as string, pass to updateQuantity
       input.addEventListener('change', (e) => {
         updateQuantity(input.dataset.productId, e.target.value);
       });
@@ -204,9 +185,10 @@ function updateCart() {
   updateTotals();
 }
 
+// Recalculate subtotal, tax and total and write to DOM
 function updateTotals() {
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.05;
+  const tax = subtotal * 0.05; // simple 5% tax example
   const total = subtotal + tax;
 
   document.getElementById('subtotal').textContent = formatPrice(subtotal);
@@ -214,15 +196,49 @@ function updateTotals() {
   document.getElementById('total').textContent = formatPrice(total);
 }
 
+// Clear the cart
 function clearCart() {
   cart = [];
   updateCart();
 }
 
-function initializeApp() {
+// Example async function: attempt to sync products from server when online
+// async/await is modern promise syntax that makes asynchronous code look synchronous
+async function SaveProductsFromServer() {
+  // Only try to sync if the browser is online
+  if (navigator.onLine) {
+    try {
+      const freshProducts = await syncProductsFromServer();
+      if (Array.isArray(freshProducts) && freshProducts.length) {
+        products = freshProducts; // replace local cache
+        renderProducts(currentCategory);
+      }
+    } catch (err) {
+      // Use console.warn for non-fatal runtime issues
+      console.warn('Server sync failed, using offline data', err);
+    }
+  }
+}
+
+// Application initialization: load data, render UI, wire event handlers
+async function initializeApp() {
+
+  // Try to refresh products from server (if available)
+  await SaveProductsFromServer();
+
+  // Load cached products from IndexedDB (or other local DB) via service module
+  try {
+    products = await getProductsFromDB();
+  } catch (err) {
+    console.warn('Failed to load products from DB', err);
+    products = [];
+  }
+
+  // Initial render
   renderProducts();
   updateCart();
 
+  // Example: listening for clicks on favorite cards (uses data attributes)
   document.querySelectorAll('.favorite-card').forEach(card => {
     card.addEventListener('click', () => {
       const productId = card.dataset.product;
@@ -230,6 +246,7 @@ function initializeApp() {
     });
   });
 
+  // Category buttons: toggle classes and re-render products for selected category
   document.querySelectorAll('.category-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.category-btn').forEach(b => {
@@ -245,25 +262,41 @@ function initializeApp() {
     });
   });
 
+  // Clear cart button (native confirm dialog shown)
   document.getElementById('clearCart').addEventListener('click', () => {
     if (confirm('Are you sure you want to clear the cart?')) {
       clearCart();
     }
   });
 
+  // Search input: re-render as user types
   document.getElementById('searchInput').addEventListener('input', (e) => {
     renderProducts(currentCategory, e.target.value);
   });
 
+  // Payment buttons: prepare sale and call `saveSale` from service
   document.querySelectorAll('.payment-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (cart.length === 0) {
         alert('Cart is empty! Please add items first.');
         return;
       }
 
+      // Calculate total (including tax)
       const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.05;
       const paymentMethod = btn.textContent.trim();
+      const saleHeader = {
+        date: new Date().toISOString(),
+        total: total
+      };
+      const saleItems = cart.map(item => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      // Persist the sale (may work offline depending on implementation)
+      await saveSale(saleHeader, saleItems);
 
       alert(`Payment of ${formatPrice(total)} via ${paymentMethod} processed successfully!`);
       clearCart();
@@ -271,4 +304,17 @@ function initializeApp() {
   });
 }
 
+// Register service worker with basic lifecycle callbacks. This keeps the PWA
+// updated and allows offline usage when a service worker is available.
+registerSW({
+  onOfflineReady() {
+    console.log('POS ready for offline use')
+  },
+  onNeedRefresh() {
+    console.log('New version available')
+  }
+})
+
+// Start the app once DOM has loaded. `DOMContentLoaded` is preferred over `load` for
+// faster startup because it fires when the DOM is ready (images may still be loading).
 document.addEventListener('DOMContentLoaded', initializeApp);
