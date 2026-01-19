@@ -12,7 +12,7 @@ export async function saveSale(header, items) {
     const headerId = await db.saleHeaders.add(header)
 
     // Add saleId to each item
-    const itemsWithSaleId = items.map(i => ({ ...i, saleId: headerId }))
+    const itemsWithSaleId = items.map(i => ({ ...i, sale_id: headerId }))
 
     // Save items
     await db.saleItems.bulkPut(itemsWithSaleId)

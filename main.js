@@ -24,6 +24,7 @@ let currentCategory = 'all'; // Track active product category
 // Utility: format numeric price as localized string with currency
 // Template literals (backticks) allow easy interpolation: `Ks ${...}`
 function formatPrice(price) {
+  if (price === null || price === undefined) price = 0;
   return `Ks ${price.toLocaleString()}`;
 }
 
@@ -42,7 +43,7 @@ function renderProducts(category = 'all', searchTerm = '') {
   // Support simple client-side search (case-insensitive)
   if (searchTerm) {
     filteredProducts = filteredProducts.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      p.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
@@ -50,8 +51,8 @@ function renderProducts(category = 'all', searchTerm = '') {
   productsGrid.innerHTML = filteredProducts.map(product => `
     <div class="col-md-6 col-lg-3">
       <div class="product-card" data-product-id="${product.id}">
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <div class="product-name">${product.name}</div>
+        <img src="data:image/jpeg;base64,${product.image}" alt="${product.stock_name}" class="product-image">
+        <div class="product-name">${product.stock_name}</div>
         <div class="product-price">${formatPrice(product.price)}</div>
       </div>
     </div>
@@ -123,7 +124,7 @@ function updateCart() {
       <div class="cart-item">
         <div class="d-flex justify-content-between align-items-start mb-2">
           <div class="flex-grow-1">
-            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-name">${item.stock_name}</div>
             <div class="cart-item-price">${formatPrice(item.price)} each</div>
           </div>
           <button class="delete-btn" data-product-id="${item.id}">
@@ -286,11 +287,12 @@ async function initializeApp() {
       const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.05;
       const paymentMethod = btn.textContent.trim();
       const saleHeader = {
-        date: new Date().toISOString(),
-        total: total
+        invoice_no:"POS-" + new Date().toISOString(),
+        invoice_date: new Date().toISOString(),
+        amount: total
       };
       const saleItems = cart.map(item => ({
-        productId: item.id,
+        stock_id: item.id,
         quantity: item.quantity,
         price: item.price
       }));
