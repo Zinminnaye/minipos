@@ -1,20 +1,11 @@
 import './style.css';
-// Import global styles for the app (CSS handled by bundler)
-import './style.css';
-
-// Import the service worker register helper from the PWA plugin
-// `virtual:pwa-register` is provided by the build tool (Vite + plugin)
 import { registerSW } from 'virtual:pwa-register';
-
-// Named imports from service modules. These functions are defined
-// in `./services/productService.js` and `./services/saleService.js`.
-// Using named imports lets us import only what we need.
 import {
   getProductsFromDB,
   syncProductsFromServer
 } from './services/productService.js';
-
-import { saveSale, getSaleHeaders, getSaleItems } from './services/saleService.js'
+import { saveSale, getSaleHeaders, getSaleItems } from './services/saleService.js';
+import { getCurrentSession, logout, onAuthStateChange } from './services/authService.js';
 
 // Application state (mutable). Use `let` for variables that change.
 let products = []; // Array of product objects
@@ -221,8 +212,25 @@ async function SaveProductsFromServer() {
   }
 }
 
+async function checkAuthentication() {
+  try {
+    const session = await getCurrentSession();
+    if (!session) {
+      window.location.href = '/login.html';
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    window.location.href = '/login.html';
+    return false;
+  }
+}
+
 // Application initialization: load data, render UI, wire event handlers
 async function initializeApp() {
+  const isAuthenticated = await checkAuthentication();
+  if (!isAuthenticated) return;
 
   // Try to refresh products from server (if available)
   await SaveProductsFromServer();
@@ -304,6 +312,30 @@ async function initializeApp() {
       clearCart();
     });
   });
+
+  addLogoutButton();
+}
+
+function addLogoutButton() {
+  const navbar = document.querySelector('.navbar');
+  if (!navbar) return;
+
+  const logoutContainer = navbar.querySelector('.d-flex.align-items-center');
+  if (logoutContainer && !document.getElementById('logoutBtn')) {
+    const logoutBtn = document.createElement('button');
+    logoutBtn.id = 'logoutBtn';
+    logoutBtn.className = 'btn btn-logout btn-sm ms-3';
+    logoutBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i> Logout';
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await logout();
+        window.location.href = '/login.html';
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    });
+    logoutContainer.appendChild(logoutBtn);
+  }
 }
 
 // Register service worker with basic lifecycle callbacks. This keeps the PWA
