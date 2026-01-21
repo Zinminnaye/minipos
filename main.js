@@ -51,7 +51,7 @@ function renderProducts(category = 'all', searchTerm = '') {
   productsGrid.innerHTML = filteredProducts.map(product => `
     <div class="col-md-6 col-lg-3">
       <div class="product-card" data-product-id="${product.id}">
-        <img src="data:image/jpeg;base64,${product.image}" alt="${product.stock_name}" class="product-image">
+       <img src="${product.image || 'placeholder.png'}" alt="${product.stock_name}" class="product-image mb-2">
         <div class="product-name">${product.stock_name}</div>
         <div class="product-price">${formatPrice(product.price)}</div>
       </div>

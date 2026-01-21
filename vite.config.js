@@ -2,6 +2,20 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'https://ServerIP:18007', 
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
+  build: {
+    sourcemap: true,
+    minify: false
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
@@ -25,13 +39,5 @@ export default defineConfig({
     })
   ],
 
-    server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:44555', 
-        changeOrigin: true,
-        secure: false
-      }
-    }
-  }
+  
 })

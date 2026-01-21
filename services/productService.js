@@ -1,5 +1,6 @@
 // productService.js
 import { db  } from '../indexedDB/db.js'
+import { ProductAPI } from './api_urls.js'
 
 // products array
  let products = []
@@ -64,14 +65,14 @@ export async function syncProductsFromServer() {
 if (!navigator.onLine) return products
 
   try {
-    const res = await fetch('/api/Stock/SelectAll')
-    const serverProducts = await res.json()
+    console.debug('[productService] calling ProductAPI.list()', { online: navigator.onLine })
+    const serverProducts = await ProductAPI.list()
     await saveProducts(serverProducts)
     products = serverProducts
     console.log('Products synced from server:', serverProducts)
     return serverProducts
   } catch (err) {
-    console.warn('Server fetch failed, using offline products')
+    console.warn('Server fetch failed, using offline products', err)
     return products
   }
 
